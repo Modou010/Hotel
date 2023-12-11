@@ -1,26 +1,28 @@
 // hotel.cpp
 #include "projet_hotel.hpp"
+#include "facture.hpp"
 #include <iostream>
 
 // Définition des méthodes de la classe Hotel
 
-bool isAddressValid(const Address& address) {
+//Information sur hotel
+bool isAdresseValid(const Adresse& adresse) {
     // Expression régulière pour le numéro et le nom de rue
-    std::regex streetRegex("^[0-9]+\\s[a-zA-Z\\s]+$");
+    std::regex rueRegex("^[0-9]+\\s[a-zA-Z\\s]+$");
 
     // Expression régulière pour le code postal
-    std::regex postalCodeRegex("^[0-9]+$");
+    std::regex codePostalRegex("^[0-9]+$");
 
     // Expression régulière pour la ville
-    std::regex cityRegex("^[a-zA-Z\\s]+$");
+    std::regex villeRegex("^[a-zA-Z\\s]+$");
 
     // Expression régulière pour la mention de le pays
-    std::regex countryRegex("^[a-zA-Z\\s]+$");
+    std::regex paysRegex("^[a-zA-Z\\s]+$");
 
-    return std::regex_match(address.street, streetRegex) &&
-           std::regex_match(address.postalCode, postalCodeRegex) &&
-           std::regex_match(address.city, cityRegex) &&
-           std::regex_match(address.country, countryRegex);
+    return std::regex_match(adresse.rue, rueRegex) &&
+           std::regex_match(adresse.codePostal, codePostalRegex) &&
+           std::regex_match(adresse.ville, villeRegex) &&
+           std::regex_match(adresse.pays, paysRegex);
 }
 
 void Hotel::setNom(const std::string& nom) {
@@ -31,24 +33,20 @@ void Hotel::setNom(const std::string& nom) {
         this->nom = nom;
     }
 }
-
 std::string Hotel::getNom() const {
     return nom;
 }
-
-void Hotel::setAdresse(const Address& adresse) {
+void Hotel::setAdresse(const Adresse& adresse) {
     // Vérification de l'adresse en utilisant la fonction isAddressValid
-    if (isAddressValid(adresse)) {
+    if (isAdresseValid(adresse)) {
         this->adresse = adresse;
     } else {
         std::cerr << "Erreur : Adresse invalide.\n";
     }
 }
-
-Address Hotel::getAdresse() const {
+Adresse Hotel::getAdresse() const {
     return adresse;
 }
-
 // Getter and Setter for telephoneFixe
 void Hotel::setTelephoneFixe(const std::string &telephoneFixe) {
     // Vérification du format du numéro de téléphone fixe (peut être étendu selon les besoins)
@@ -58,11 +56,9 @@ void Hotel::setTelephoneFixe(const std::string &telephoneFixe) {
         this->telephoneFixe = telephoneFixe;
     }
 }
-
 std::string Hotel::getTelephoneFixe() const {
     return telephoneFixe;
 }
-
 // Getter and Setter for telephonePortable
 void Hotel::setTelephonePortable(const std::string &telephonePortable) {
     // Vérification du format du numéro de téléphone portable (peut être étendu selon les besoins)
@@ -72,34 +68,15 @@ void Hotel::setTelephonePortable(const std::string &telephonePortable) {
         this->telephonePortable = telephonePortable;
     }
 }
-
 std::string Hotel::getTelephonePortable() const {
     return telephonePortable;
 }
 
+
+// class Client
 void Hotel::ajouterClient(const Client& client) {
     clients.push_back(client);
 }
-
-void Hotel::ajouterReceptionniste(const Receptionniste& receptionniste) {
-    receptionnistes.push_back(receptionniste);
-}
-
-void Hotel::ajouterChambre(const Chambre& chambre) {
-    chambres.push_back(chambre);
-}
-
-void Hotel::effectuerReservation(const Client& client, const Chambre& chambre, const std::string& dateDebut, const std::string& dateFin) {
-    Reservation reservation(client, chambre, dateDebut, dateFin);
-    reservations.push_back(reservation);
-    chambre.reserver();
-}
-
-void Hotel::genererFacture(const Reservation& reservation, double montant) {
-    Facture facture(reservation, montant);
-    factures.push_back(facture);
-}
-
 void Hotel::afficherClients() const {
     std::cout << "Liste des clients de l'hotel:\n";
     for (const auto& client : clients) {
@@ -108,12 +85,59 @@ void Hotel::afficherClients() const {
     std::cout << "\n";
 }
 
-void Hotel::afficherChambresDisponibles() const {
-    std::cout << "Chambres disponibles:\n";
+// class Receptioniste
+void Hotel::ajouterReceptionniste(const Receptionniste& receptionniste) {
+    receptionnistes.push_back(receptionniste);
+}
+
+// class Chambre pour obtenir la liste des chambres total disponibles
+std::vector<Chambre> Hotel::getChambresDisponibles() const {
+    std::vector<Chambre> chambresDisponibles;   
     for (const auto& chambre : chambres) {
         if (chambre.estDisponible()) {
-            std::cout << "Numéro: " << chambre.getNumeroChambre() << ", Type: " << chambre.getTypeChambre() << "\n";
+            chambresDisponibles.push_back(chambre);
         }
+    }
+    return chambresDisponibles;
+}
+// Méthode pour obtenir le nombre total de chambres disponibles
+int Hotel::nombreChambresDisponibles() const {
+    int count = 0;
+    for (const auto& chambre : chambres) {
+        if (chambre.estDisponible()) {
+            count++;
+        }
+    }
+    return count;
+}
+
+void Hotel::ajouterChambre(const Chambre& chambre) {
+    chambres.push_back(chambre);
+}
+// class Reservation
+Reservation Hotel::effectuerReservation(const Client& client, Chambre& chambre, const std::string& dateDebut, const std::string& dateFin) {
+    Reservation reservation(client, chambre, dateDebut, dateFin);
+    reservations.push_back(reservation);
+    chambre.reserver();
+    return reservation;
+}
+
+//clas Facture
+void Hotel::genererFacture(const Reservation& reservation, double montant) {
+    Facture facture(reservation, montant);
+    factures.push_back(facture);
+
+}
+void Hotel::afficherFactures() const {
+    std::cout << "Factures générées:\n";
+    for (const auto& facture : factures) {
+        std::cout << "Montant: " << facture.getMontant() << ", Date: " << facture.getDate() << "\n";
     }
     std::cout << "\n";
 }
+
+
+
+
+
+

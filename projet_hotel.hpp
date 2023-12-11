@@ -11,19 +11,19 @@
 #include "reservation.hpp"
 #include "facture.hpp"
 
-struct Address {
-    std::string street;
-    std::string postalCode;
-    std::string city;
-    std::string country;
+struct Adresse {
+    std::string rue;
+    std::string codePostal;
+    std::string ville;
+    std::string pays;
 };
 
-bool isAddressValid(const Address& address);
+bool isAdresseValid(const Adresse& adresse);
 
 class Hotel {
 private:
     std::string nom;
-    Address adresse;
+    Adresse adresse;
     std::string telephoneFixe;
     std::string telephonePortable;
 
@@ -38,8 +38,8 @@ public:
     void setNom(const std::string& nom);
     std::string getNom() const;
 
-    void setAdresse(const Address& adresse);
-    Address getAdresse() const;
+    void setAdresse(const Adresse& adresse);
+    Adresse getAdresse() const;
 
     void setTelephoneFixe(const std::string& telephoneFixe);
     std::string getTelephoneFixe() const;
@@ -48,13 +48,17 @@ public:
     std::string getTelephonePortable() const;
 
     void ajouterClient(const Client& client);
-    void ajouterReceptionniste(const Receptionniste& receptionniste);
-    void ajouterChambre(const Chambre& chambre);
-    void effectuerReservation(const Client& client, const Chambre& chambre, const std::string& dateDebut, const std::string& dateFin);
-    void genererFacture(const Reservation& reservation, double montant);
-
     void afficherClients() const;
-    void afficherChambresDisponibles() const;
+
+    void ajouterReceptionniste(const Receptionniste& receptionniste);
+    Reservation effectuerReservation(const Client& client, Chambre& chambre, const std::string& dateDebut, const std::string& dateFin);
+
+    void genererFacture(const Reservation& reservation, double montant);
+    void afficherFactures() const;
+    
+    int Hotel::nombreChambresDisponibles() const;
+    std::vector<Chambre> getChambresDisponibles() const;
+    void ajouterChambre(const Chambre& chambre);
 };
 
 #endif // HOTEL_HPP
