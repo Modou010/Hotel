@@ -27,11 +27,12 @@ private:
     std::string telephoneFixe;
     std::string telephonePortable;
 
-    std::vector<Client> clients;
-    std::vector<Receptionniste> receptionnistes;
-    std::vector<Chambre> chambres;
-    std::vector<Reservation> reservations;
-    std::vector<Facture> factures;
+    std::vector<Client*> clients;
+    std::vector<Receptionniste*> receptionnistes;
+    std::vector<Chambre*> chambres;
+    std::vector<Reservation*> reservations;
+    std::vector<Facture*> factures; 
+
 
 public:
     // Méthodes pour la gestion de l'hôtel
@@ -47,18 +48,20 @@ public:
     void setTelephonePortable(const std::string& telephonePortable);
     std::string getTelephonePortable() const;
 
-    void ajouterClient(const Client& client);
+    void ajouterClient(Client* client);
     void afficherClients() const;
 
-    void ajouterReceptionniste(const Receptionniste& receptionniste);
+    void ajouterReceptionniste(Receptionniste* receptionniste);
     Reservation effectuerReservation(const Client& client, Chambre& chambre, const std::string& dateDebut, const std::string& dateFin);
 
     void genererFacture(const Reservation& reservation, double montant);
     void afficherFactures() const;
-    
+
+    void ajouterChambre(Chambre* chambre);
     int Hotel::nombreChambresDisponibles() const;
     std::vector<Chambre> getChambresDisponibles() const;
-    void ajouterChambre(const Chambre& chambre);
+
+    
 };
 
 #endif // HOTEL_HPP

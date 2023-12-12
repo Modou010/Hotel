@@ -1,6 +1,11 @@
 // hotel.cpp
 #include "projet_hotel.hpp"
+#include "receptioniste.hpp"
+#include "chambre.hpp"
+#include "reservation.hpp"
 #include "facture.hpp"
+#include "personne.hpp"
+#include "client.hpp"
 #include <iostream>
 
 // Définition des méthodes de la classe Hotel
@@ -74,7 +79,7 @@ std::string Hotel::getTelephonePortable() const {
 
 
 // class Client
-void Hotel::ajouterClient(const Client& client) {
+void Hotel::ajouterClient(Client* client) {
     clients.push_back(client);
 }
 void Hotel::afficherClients() const {
@@ -86,7 +91,7 @@ void Hotel::afficherClients() const {
 }
 
 // class Receptioniste
-void Hotel::ajouterReceptionniste(const Receptionniste& receptionniste) {
+void Hotel::ajouterReceptionniste(Receptionniste* receptionniste) {
     receptionnistes.push_back(receptionniste);
 }
 
@@ -111,15 +116,16 @@ int Hotel::nombreChambresDisponibles() const {
     return count;
 }
 
-void Hotel::ajouterChambre(const Chambre& chambre) {
+void Hotel::ajouterChambre(Chambre* chambre) {
     chambres.push_back(chambre);
 }
+
 // class Reservation
 Reservation Hotel::effectuerReservation(const Client& client, Chambre& chambre, const std::string& dateDebut, const std::string& dateFin) {
-    Reservation reservation(client, chambre, dateDebut, dateFin);
-    reservations.push_back(reservation);
-    chambre.reserver();
-    return reservation;
+    Reservation nouvelleReservation(client, chambre, dateDebut, dateFin);
+    nouvelleReservation.reserverChambre();
+    reservations.push_back(&nouvelleReservation);
+    return nouvelleReservation;
 }
 
 //clas Facture
@@ -136,7 +142,38 @@ void Hotel::afficherFactures() const {
     std::cout << "\n";
 }
 
+// Destructeur
+Hotel::~Hotel() {
+    // Libérer la mémoire pour les clients
+    for (auto client : clients) {
+        delete client;
+    }
+    clients.clear();
 
+    // Libérer la mémoire pour les receptionnistes
+    for (auto receptionniste : receptionnistes) {
+        delete receptionniste;
+    }
+    receptionnistes.clear();
+
+    // Libérer la mémoire pour les chambres
+    for (auto chambre : chambres) {
+        delete chambre;
+    }
+    chambres.clear();
+
+    // Libérer la mémoire pour les reservations
+    for (auto reservation : reservations) {
+        delete reservation;
+    }
+    reservations.clear();
+
+    // Libérer la mémoire pour les factures
+    for (auto facture : factures) {
+        delete facture;
+    }
+    factures.clear();
+}
 
 
 
